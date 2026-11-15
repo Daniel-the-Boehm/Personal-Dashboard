@@ -1,0 +1,32 @@
+Options -Indexes
+DirectoryIndex index.php
+ServerSignature Off
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteRule ^(inc|data)(/|$) - [F,L]
+RewriteCond %{REQUEST_URI} !/\.well-known/
+RewriteRule (^|/)\. - [F,L]
+</IfModule>
+
+<FilesMatch "\.(webmanifest)$">
+ForceType application/manifest+json
+</FilesMatch>
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+<FilesMatch "sw\.js$">
+Header set Cache-Control "no-cache"
+Header set Service-Worker-Allowed "./"
+</FilesMatch>
+<FilesMatch "\.(css|js)$">
+Header set Cache-Control "no-cache"
+</FilesMatch>
+<FilesMatch "\.(png)$">
+Header set Cache-Control "public, max-age=604800"
+</FilesMatch>
+</IfModule>
